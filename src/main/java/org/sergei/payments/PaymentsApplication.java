@@ -21,6 +21,9 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class PaymentsApplication {
 
+    private static final String IP_ADDRESS_RESOURCE = "http://bot.whatismyipaddress.com";
+    private static final String COUNTRY_OF_IP = "http://ip-api.com/json/";
+
     /**
      * Resolve clients country (use any external web service to resolve it by user IP)
      * and write it to the log (that’s OK if it will fail sometimes).
@@ -32,10 +35,10 @@ public class PaymentsApplication {
     public CommandLineRunner commandLineRunner() {
         return args -> {
             try {
-                URL url = new URL("http://bot.whatismyipaddress.com");
+                URL url = new URL(IP_ADDRESS_RESOURCE);
                 BufferedReader sc = new BufferedReader(new InputStreamReader(url.openStream()));
                 RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<String> response = restTemplate.getForEntity("http://ip-api.com/json/" + sc.readLine().trim(), String.class);
+                ResponseEntity<String> response = restTemplate.getForEntity(COUNTRY_OF_IP + sc.readLine().trim(), String.class);
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode node = mapper.readTree(response.getBody());
                 log.info("Country of your IP: {}", node.get("country").asText());
