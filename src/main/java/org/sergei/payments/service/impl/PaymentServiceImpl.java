@@ -96,8 +96,13 @@ public class PaymentServiceImpl implements PaymentService {
         var paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
         if (paymentSummary.isPresent()) {
             var paymentEntity = paymentSummary.get();
-            // TODO: There should be created a proper check if it is possible to cancel
-            //  payment only on the day of creation before 00:00.
+            // TODO: Client should be able to cancel the payment.
+            //  It is possible to cancel payment only on the day of creation before 00:00.
+            //  When cancel happens, cancellation fee should be calculated and saved along the payment in database.
+            //  Cancellation fee is calculated as: h * k
+            //  Where h - number of full hours (2:59 = 2h) payment is in system;
+            //  k - coefficient (0.05 for TYPE1; 0.1 for TYPE2, 0.15 for TYPE3).
+            //  Result is an amount in EUR.
             if (LocalDateTime.now().isBefore(paymentEntity.getCreationDate().toLocalDate().atStartOfDay().plusHours(12))) {
                 paymentEntity.setStatus(PaymentStatus.CANCELLED);
                 paymentEntity.setCancellationFee(paymentEntity.getCancellationFee());
