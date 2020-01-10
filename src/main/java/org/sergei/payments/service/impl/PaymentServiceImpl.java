@@ -96,6 +96,8 @@ public class PaymentServiceImpl implements PaymentService {
         var paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
         if (paymentSummary.isPresent()) {
             var paymentEntity = paymentSummary.get();
+            // TODO: There should be created a proper check if it is possible to cancel
+            //  payment only on the day of creation before 00:00.
             if (LocalDateTime.now().isBefore(paymentEntity.getCreationDate().toLocalDate().atStartOfDay().plusHours(12))) {
                 paymentEntity.setStatus(PaymentStatus.CANCELLED);
                 paymentEntity.setCancellationFee(paymentEntity.getCancellationFee());
