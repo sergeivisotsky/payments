@@ -2,13 +2,11 @@ package org.sergei.payments.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.NotImplementedException;
+import org.sergei.payments.exceptions.DataIntegrityException;
 import org.sergei.payments.exceptions.DataNotFoundException;
 import org.sergei.payments.exceptions.ResourceNotFoundException;
 import org.sergei.payments.jpa.model.PaymentStatus;
@@ -38,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public ResponseDTO<PaymentSummaryDTO> getPaymentByNumber(String paymentNumber) {
-        Optional<PaymentSummary> paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
+        var paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
         if (paymentSummary.isPresent()) {
             PaymentSummary paymentPrinc = paymentSummary.get();
             return new ResponseDTO<>(ImmutableList.of(),
@@ -57,7 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public ResponseDTO<PaymentResponseHolderDTO> getIdsOfAllActiveAndFilterByAmount(BigDecimal amountFrom, BigDecimal amountTo) {
-        List<String> paymentNumbers = paymentRepository.findIdsOfAllActiveAndFilterByAmount(amountFrom, amountTo);
+        var paymentNumbers = paymentRepository.findIdsOfAllActiveAndFilterByAmount(amountFrom, amountTo);
         return new ResponseDTO<>(ImmutableList.of(),
                 ImmutableList.of(PaymentResponseHolderDTO.builder()
                         .paymentNumbers(!paymentNumbers.isEmpty() ? paymentNumbers : null)
@@ -70,8 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public ResponseDTO<PaymentResponseHolderDTO> initPayment(PaymentRequestDTO request) {
-        String paymentNumber = UUID.randomUUID().toString();
-        Optional<TypeEntity> type = typeRepository.findTypeByNumber(request.getTypeNumber());
+        var paymentNumber = UUID.randomUUID().toString();
+        var type = typeRepository.findTypeByNumber(request.getTypeNumber());
         if (type.isPresent()) {
             TypeEntity typeEntity = type.get();
             paymentRepository.save(PaymentSummary.builder()
@@ -95,7 +93,18 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public ResponseDTO<PaymentSummaryDTO> cancelPayment(String paymentNumber) {
-        // TODO
-        throw new NotImplementedException("Method is not implemented");
+        var paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
+        if (paymentSummary.isPresent()) {
+            var paymentEntity = paymentSummary.get();
+            if (LocalDateTime.now().isBefore(paymentEntity.getCreationDate().toLocalDate().atStartOfDay().plusHours(12))) {
+                paymentEntity.setStatus(PaymentStatus.CANCELLED);
+                paymentEntity.setCancellationFee(paymentEntity.getCancellationFee());
+                return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
+            } else {
+                throw new DataIntegrityException("PaymentCancellationException", "PAY_002");
+            }
+        } else {
+            throw new ResourceNotFoundException("TypeNotFound", "TPE_001");
+        }
     }
 }

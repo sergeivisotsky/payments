@@ -8,3 +8,4 @@ INSERT INTO payment_summary VALUES (2, 'b5a43bbc-68e6-40ab-9ece-f871c997a282', 1
 
 INSERT INTO error_messages VALUES (1, 'TPE_001', 'Required type is not found');
 INSERT INTO error_messages VALUES (2, 'PAY_001', 'Payment with this number not found');
+INSERT INTO error_messages VALUES (3, 'PAY_002', 'Payment can be cancelled only on the day of creation before 00:00');

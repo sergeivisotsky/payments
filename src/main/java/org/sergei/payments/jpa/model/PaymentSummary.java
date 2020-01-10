@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author Sergei Visotsky
@@ -33,9 +34,12 @@ public class PaymentSummary extends BaseEntity implements Serializable {
     private String lastName;
     private String cardNumber;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime creationDate;
+
+    @Setter
     private BigDecimal cancellationFee;
 
     @OneToOne(fetch = FetchType.LAZY,

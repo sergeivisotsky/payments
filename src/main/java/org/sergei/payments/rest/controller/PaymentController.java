@@ -45,4 +45,9 @@ public class PaymentController {
     public ResponseEntity<ResponseDTO<PaymentResponseHolderDTO>> initPayment(@RequestBody PaymentRequestDTO request) {
         return new ResponseEntity<>(paymentService.initPayment(request), HttpStatus.OK);
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ResponseDTO<PaymentSummaryDTO>> cancelPayment(@RequestParam("number") String paymentNumber) {
+        return new ResponseEntity<>(paymentService.cancelPayment(paymentNumber), HttpStatus.OK);
+    }
 }
