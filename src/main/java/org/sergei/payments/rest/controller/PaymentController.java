@@ -1,15 +1,18 @@
-package org.sergei.payments.rest.controller.controller;
+package org.sergei.payments.rest.controller;
 
 import java.math.BigDecimal;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.sergei.payments.rest.controller.dto.request.PaymentRequestDTO;
-import org.sergei.payments.rest.controller.dto.response.PaymentResponseHolderDTO;
-import org.sergei.payments.rest.controller.dto.response.ResponseDTO;
+import org.sergei.payments.rest.dto.PaymentRequestDTO;
+import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
+import org.sergei.payments.rest.dto.PaymentSummaryDTO;
+import org.sergei.payments.rest.dto.ResponseDTO;
 import org.sergei.payments.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payments")
+@Api(tags = {"Payments operation"})
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @GetMapping("/{paymentNumber}")
+    public ResponseEntity<ResponseDTO<PaymentSummaryDTO>> getPaymentByNumber(@PathVariable String paymentNumber) {
+        return new ResponseEntity<>(paymentService.getPaymentByNumber(paymentNumber), HttpStatus.OK);
+    }
 
     @GetMapping(params = {"amountFrom", "amountTo"})
     public ResponseEntity<ResponseDTO<PaymentResponseHolderDTO>> getIdsOfAllActiveAndFilterByAmount(@RequestParam("amountFrom") BigDecimal amountFrom,

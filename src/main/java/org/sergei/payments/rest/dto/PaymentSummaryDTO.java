@@ -1,6 +1,6 @@
-package org.sergei.payments.rest.controller.dto.response;
+package org.sergei.payments.rest.dto;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentResponseHolderDTO {
-    private List<String> paymentNumbers;
+public class PaymentSummaryDTO {
+    private String paymentNumber;
+    private BigDecimal cancellationFee;
 }

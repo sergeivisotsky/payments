@@ -2,10 +2,10 @@ package org.sergei.payments.service;
 
 import java.math.BigDecimal;
 
-import org.sergei.payments.rest.controller.dto.request.PaymentRequestDTO;
-import org.sergei.payments.rest.controller.dto.response.PaymentResponseHolderDTO;
-import org.sergei.payments.rest.controller.dto.response.PaymentSummaryDTO;
-import org.sergei.payments.rest.controller.dto.response.ResponseDTO;
+import org.sergei.payments.rest.dto.PaymentRequestDTO;
+import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
+import org.sergei.payments.rest.dto.PaymentSummaryDTO;
+import org.sergei.payments.rest.dto.ResponseDTO;
 
 /**
  * @author Sergei Visotsky

@@ -8,7 +8,7 @@ package org.sergei.payments.service;
 
 import java.util.List;
 
-import org.sergei.payments.rest.controller.dto.response.ResponseErrorDTO;
+import org.sergei.payments.rest.dto.ResponseErrorDTO;
 
 /**
  * @author Sergei Visotsky

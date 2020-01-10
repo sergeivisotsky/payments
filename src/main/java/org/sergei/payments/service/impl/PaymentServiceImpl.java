@@ -2,21 +2,24 @@ package org.sergei.payments.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.sergei.payments.exceptions.DataNotFoundException;
+import org.sergei.payments.exceptions.ResourceNotFoundException;
 import org.sergei.payments.jpa.model.PaymentStatus;
 import org.sergei.payments.jpa.model.PaymentSummary;
 import org.sergei.payments.jpa.model.TypeEntity;
 import org.sergei.payments.jpa.repository.PaymentRepository;
 import org.sergei.payments.jpa.repository.TypeRepository;
-import org.sergei.payments.rest.controller.dto.request.PaymentRequestDTO;
-import org.sergei.payments.rest.controller.dto.response.PaymentResponseHolderDTO;
-import org.sergei.payments.rest.controller.dto.response.PaymentSummaryDTO;
-import org.sergei.payments.rest.controller.dto.response.ResponseDTO;
+import org.sergei.payments.rest.dto.PaymentRequestDTO;
+import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
+import org.sergei.payments.rest.dto.PaymentSummaryDTO;
+import org.sergei.payments.rest.dto.ResponseDTO;
 import org.sergei.payments.service.PaymentService;
 import org.springframework.stereotype.Service;
 
@@ -34,21 +37,32 @@ public class PaymentServiceImpl implements PaymentService {
      * {@inheritDoc}
      */
     @Override
-    public ResponseDTO<PaymentResponseHolderDTO> getIdsOfAllActiveAndFilterByAmount(BigDecimal amountFrom, BigDecimal amountTo) {
-        return new ResponseDTO<>(ImmutableList.of(),
-                ImmutableList.of(PaymentResponseHolderDTO.builder()
-                        .paymentNumbers(paymentRepository.findIdsOfAllActiveAndFilterByAmount(amountFrom, amountTo))
-                        .build()
-                ));
+    public ResponseDTO<PaymentSummaryDTO> getPaymentByNumber(String paymentNumber) {
+        Optional<PaymentSummary> paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
+        if (paymentSummary.isPresent()) {
+            PaymentSummary paymentPrinc = paymentSummary.get();
+            return new ResponseDTO<>(ImmutableList.of(),
+                    ImmutableList.of(
+                            PaymentSummaryDTO.builder()
+                                    .paymentNumber(paymentPrinc.getPaymentNumber())
+                                    .cancellationFee(paymentPrinc.getCancellationFee())
+                                    .build()));
+        } else {
+            throw new DataNotFoundException("PaymentNotFound", "PAY_001");
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ResponseDTO<PaymentSummaryDTO> getPaymentByNumber(String paymentNumber) {
-        // TODO
-        throw new NotImplementedException("Method is not implemented");
+    public ResponseDTO<PaymentResponseHolderDTO> getIdsOfAllActiveAndFilterByAmount(BigDecimal amountFrom, BigDecimal amountTo) {
+        List<String> paymentNumbers = paymentRepository.findIdsOfAllActiveAndFilterByAmount(amountFrom, amountTo);
+        return new ResponseDTO<>(ImmutableList.of(),
+                ImmutableList.of(PaymentResponseHolderDTO.builder()
+                        .paymentNumbers(!paymentNumbers.isEmpty() ? paymentNumbers : null)
+                        .build()
+                ));
     }
 
     /**
@@ -58,48 +72,22 @@ public class PaymentServiceImpl implements PaymentService {
     public ResponseDTO<PaymentResponseHolderDTO> initPayment(PaymentRequestDTO request) {
         String paymentNumber = UUID.randomUUID().toString();
         Optional<TypeEntity> type = typeRepository.findTypeByNumber(request.getTypeNumber());
-//        String typeOfType = request.getTypeOfType();
-//        TypeEntity typeEntity = null;
-//        switch (typeOfType) {
-//            case "TypeOneEntity": {
-//                Optional<TypeOneEntity> type = typeOneRepository.findTypeByNumber(request.getTypeNumber());
-//                if (type.isPresent()) {
-//                    typeEntity = type.get();
-//                } else {
-//                    throw new DataNotFoundException("TypeNotFound", "TPE_001");
-//                }
-//                break;
-//            }
-//            case "TypeTwoEntity": {
-//                Optional<TypeTwoEntity> type = typeTwoRepository.findTypeByNumber(request.getTypeNumber());
-//                if (type.isPresent()) {
-//                    typeEntity = type.get();
-//                } else {
-//                    throw new DataNotFoundException("TypeNotFound", "TPE_001");
-//                }
-//                break;
-//            }
-//            case "TypeThreeEntity": {
-//                Optional<TypeThreeEntity> type = typeThreeRepository.findTypeByNumber(request.getTypeNumber());
-//                if (type.isPresent()) {
-//                    typeEntity = type.get();
-//                } else {
-//                    throw new DataNotFoundException("TypeNotFound", "TPE_001");
-//                }
-//                break;
-//            }
-//        }
-        paymentRepository.save(PaymentSummary.builder()
-                .paymentNumber(paymentNumber)
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .cardNumber(request.getCardNumber())
-                .status(PaymentStatus.ISSUED)
-                .creationDate(LocalDateTime.now())
-                .totalAmount(type.get().getAmount())
-                .type(type.get())
-                .build());
-        return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
+        if (type.isPresent()) {
+            TypeEntity typeEntity = type.get();
+            paymentRepository.save(PaymentSummary.builder()
+                    .paymentNumber(paymentNumber)
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .cardNumber(request.getCardNumber())
+                    .status(PaymentStatus.ISSUED)
+                    .creationDate(LocalDateTime.now())
+                    .totalAmount(typeEntity.getAmount())
+                    .type(typeEntity)
+                    .build());
+            return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
+        } else {
+            throw new ResourceNotFoundException("TypeNotFound", "TPE_001");
+        }
     }
 
     /**

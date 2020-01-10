@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -30,6 +32,8 @@ public class PaymentSummary extends BaseEntity implements Serializable {
     private String firstName;
     private String lastName;
     private String cardNumber;
+
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime creationDate;
     private BigDecimal cancellationFee;

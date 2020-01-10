@@ -1,4 +1,6 @@
-package org.sergei.payments.rest.controller.dto.response;
+package org.sergei.payments.rest.dto;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentSummaryDTO {
-    private String paymentNumber;
-    private String cancellationFee;
+public class PaymentResponseHolderDTO {
+    private List<String> paymentNumbers;
 }

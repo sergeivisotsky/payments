@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
-import org.sergei.payments.rest.controller.dto.response.ResponseErrorDTO;
+import org.sergei.payments.rest.dto.ResponseErrorDTO;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;

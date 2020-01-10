@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.sergei.payments.rest.controller.dto.response.ResponseDTO;
+import org.sergei.payments.rest.dto.ResponseDTO;
 import org.sergei.payments.service.ResponseMessageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;

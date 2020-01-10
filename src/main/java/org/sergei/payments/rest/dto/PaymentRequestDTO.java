@@ -1,4 +1,4 @@
-package org.sergei.payments.rest.controller.dto.request;
+package org.sergei.payments.rest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,5 @@ public class PaymentRequestDTO {
     private String firstName;
     private String lastName;
     private String cardNumber;
-    //    private String typeOfType;
     private String typeNumber;
 }
