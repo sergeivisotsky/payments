@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * @author Sergei Visotsky
+ */
 @Slf4j
 @SpringBootApplication
 public class PaymentsApplication {
