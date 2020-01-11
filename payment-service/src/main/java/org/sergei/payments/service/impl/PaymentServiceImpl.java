@@ -15,16 +15,21 @@ import org.sergei.payments.exceptions.ResourceNotFoundException;
 import org.sergei.payments.jpa.model.CancellationCoefficient;
 import org.sergei.payments.jpa.model.PaymentStatus;
 import org.sergei.payments.jpa.model.PaymentSummary;
+import org.sergei.payments.jpa.model.PaymentTransmission;
 import org.sergei.payments.jpa.model.TypeEntity;
 import org.sergei.payments.jpa.repository.CancellationCoefficientRepository;
 import org.sergei.payments.jpa.repository.PaymentRepository;
+import org.sergei.payments.jpa.repository.PaymentTransmissionRepository;
 import org.sergei.payments.jpa.repository.TypeRepository;
 import org.sergei.payments.rest.dto.PaymentRequestDTO;
 import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
 import org.sergei.payments.rest.dto.PaymentSummaryDTO;
 import org.sergei.payments.rest.dto.ResponseDTO;
 import org.sergei.payments.service.PaymentService;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Sergei Visotsky
@@ -33,6 +38,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
+    private final PaymentTransmissionRepository paymentTransmissionRepository;
     private final CancellationCoefficientRepository coefficientRepository;
     private final PaymentRepository paymentRepository;
     private final TypeRepository typeRepository;
@@ -78,7 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
         var type = typeRepository.findTypeByNumber(request.getTypeNumber());
         if (type.isPresent()) {
             TypeEntity typeEntity = type.get();
-            paymentRepository.save(PaymentSummary.builder()
+            PaymentSummary savedPayment = paymentRepository.save(PaymentSummary.builder()
                     .paymentNumber(paymentNumber)
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())
@@ -88,6 +94,15 @@ public class PaymentServiceImpl implements PaymentService {
                     .totalAmount(typeEntity.getAmount())
                     .type(typeEntity)
                     .build());
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/notify/" +
+                    savedPayment.getPaymentNumber(), HttpMethod.GET, null, String.class);
+            paymentTransmissionRepository.save(
+                    PaymentTransmission.builder()
+                            .paymentNumber(savedPayment.getPaymentNumber())
+                            .httpStatusCode(response.getStatusCode().value())
+                            .httpComment(response.getStatusCode().getReasonPhrase())
+                            .build());
             return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
         } else {
             throw new ResourceNotFoundException("TypeNotFound", "TPE_001");

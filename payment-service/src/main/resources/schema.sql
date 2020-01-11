@@ -38,6 +38,15 @@ CREATE TABLE IF NOT EXISTS cancellation_coefficients
     CONSTRAINT cancellation_coefficients_pk PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS payment_transmission
+(
+    id               BIGINT NOT NULL DEFAULT nextval('system_seq'),
+    payment_number   VARCHAR(100),
+    http_status_code INTEGER,
+    http_comment     VARCHAR(15),
+    CONSTRAINT payment_transmission_pk PRIMARY KEY (id)
+);
+
 CREATE TABLE error_messages
 (
     id      BIGINT       NOT NULL DEFAULT nextval('system_seq'),
