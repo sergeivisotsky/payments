@@ -15,11 +15,11 @@ import org.sergei.payments.exceptions.ResourceNotFoundException;
 import org.sergei.payments.jpa.model.CancellationCoefficient;
 import org.sergei.payments.jpa.model.PaymentStatus;
 import org.sergei.payments.jpa.model.PaymentSummary;
-import org.sergei.payments.jpa.model.PaymentTransmission;
+import org.sergei.payments.jpa.model.PaymentTransferLog;
 import org.sergei.payments.jpa.model.TypeEntity;
 import org.sergei.payments.jpa.repository.CancellationCoefficientRepository;
 import org.sergei.payments.jpa.repository.PaymentRepository;
-import org.sergei.payments.jpa.repository.PaymentTransmissionRepository;
+import org.sergei.payments.jpa.repository.PaymentTransferLogRepository;
 import org.sergei.payments.jpa.repository.TypeRepository;
 import org.sergei.payments.rest.dto.PaymentRequestDTO;
 import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
@@ -38,7 +38,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final PaymentTransmissionRepository paymentTransmissionRepository;
+    private final PaymentTransferLogRepository paymentTransferLogRepository;
     private final CancellationCoefficientRepository coefficientRepository;
     private final PaymentRepository paymentRepository;
     private final TypeRepository typeRepository;
@@ -94,11 +94,13 @@ public class PaymentServiceImpl implements PaymentService {
                     .totalAmount(typeEntity.getAmount())
                     .type(typeEntity)
                     .build());
+
+            // Send payment ID to the listener service
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/notify/" +
                     savedPayment.getPaymentNumber(), HttpMethod.GET, null, String.class);
-            paymentTransmissionRepository.save(
-                    PaymentTransmission.builder()
+            paymentTransferLogRepository.save(
+                    PaymentTransferLog.builder()
                             .paymentNumber(savedPayment.getPaymentNumber())
                             .httpStatusCode(response.getStatusCode().value())
                             .httpComment(response.getStatusCode().getReasonPhrase())

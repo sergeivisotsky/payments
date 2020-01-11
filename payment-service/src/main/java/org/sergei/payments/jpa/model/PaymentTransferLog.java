@@ -16,8 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "payment_transmission")
-public class PaymentTransmission extends BaseEntity {
+public class PaymentTransferLog extends BaseEntity {
 
     private static final long serialVersionUID = -4650810737344044828L;
 

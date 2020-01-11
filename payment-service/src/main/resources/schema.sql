@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS cancellation_coefficients
     CONSTRAINT cancellation_coefficients_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS payment_transmission
+CREATE TABLE IF NOT EXISTS payment_transfer_log
 (
     id               BIGINT NOT NULL DEFAULT nextval('system_seq'),
     payment_number   VARCHAR(100),
