@@ -30,6 +30,14 @@ CREATE TABLE IF NOT EXISTS payment_summary
     CONSTRAINT type_entity_fk FOREIGN KEY (type_id) REFERENCES type_entity (id)
 );
 
+CREATE TABLE IF NOT EXISTS cancellation_coefficients
+(
+    id          BIGINT NOT NULL DEFAULT nextval('system_seq'),
+    type_d_type VARCHAR(45),
+    coefficient DOUBLE PRECISION,
+    CONSTRAINT cancellation_coefficients_pk PRIMARY KEY (id)
+);
+
 CREATE TABLE error_messages
 (
     id      BIGINT       NOT NULL DEFAULT nextval('system_seq'),

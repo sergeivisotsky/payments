@@ -1,7 +1,10 @@
 package org.sergei.payments.service.impl;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.ImmutableList;
@@ -9,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.sergei.payments.exceptions.DataIntegrityException;
 import org.sergei.payments.exceptions.DataNotFoundException;
 import org.sergei.payments.exceptions.ResourceNotFoundException;
+import org.sergei.payments.jpa.model.CancellationCoefficient;
 import org.sergei.payments.jpa.model.PaymentStatus;
 import org.sergei.payments.jpa.model.PaymentSummary;
 import org.sergei.payments.jpa.model.TypeEntity;
+import org.sergei.payments.jpa.repository.CancellationCoefficientRepository;
 import org.sergei.payments.jpa.repository.PaymentRepository;
 import org.sergei.payments.jpa.repository.TypeRepository;
 import org.sergei.payments.rest.dto.PaymentRequestDTO;
@@ -28,6 +33,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
+    private final CancellationCoefficientRepository coefficientRepository;
     private final PaymentRepository paymentRepository;
     private final TypeRepository typeRepository;
 
@@ -96,16 +102,16 @@ public class PaymentServiceImpl implements PaymentService {
         var paymentSummary = paymentRepository.findPaymentByNumber(paymentNumber);
         if (paymentSummary.isPresent()) {
             var paymentEntity = paymentSummary.get();
-            // TODO: Client should be able to cancel the payment.
-            //  It is possible to cancel payment only on the day of creation before 00:00.
-            //  When cancel happens, cancellation fee should be calculated and saved along the payment in database.
-            //  Cancellation fee is calculated as: h * k
-            //  Where h - number of full hours (2:59 = 2h) payment is in system;
-            //  k - coefficient (0.05 for TYPE1; 0.1 for TYPE2, 0.15 for TYPE3).
-            //  Result is an amount in EUR.
-            if (LocalDateTime.now().isBefore(paymentEntity.getCreationDate().toLocalDate().atStartOfDay().plusHours(12))) {
+            // Calculates time diff
+            LocalDateTime currTime = LocalDateTime.now();
+            LocalDateTime creationDate = paymentEntity.getCreationDate();
+            long diff = Duration.between(currTime, creationDate).abs().toHours();
+            if (currTime.isBefore(LocalDateTime.of(creationDate.toLocalDate().plusDays(1), LocalTime.MIDNIGHT))) {
+                Optional<CancellationCoefficient> coefficient =
+                        coefficientRepository.findCoefficientByDataType(paymentEntity.getType().getDtype());
                 paymentEntity.setStatus(PaymentStatus.CANCELLED);
-                paymentEntity.setCancellationFee(paymentEntity.getCancellationFee());
+                paymentEntity.setCancellationFee(BigDecimal.valueOf(diff * Double.parseDouble(String.valueOf(coefficient.get().getCoefficient()))));
+                paymentRepository.save(paymentEntity);
                 return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
             } else {
                 throw new DataIntegrityException("PaymentCancellationException", "PAY_002");

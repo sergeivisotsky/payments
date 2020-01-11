@@ -1,6 +1,7 @@
 package org.sergei.payments.jpa.model;
 
 import java.math.BigDecimal;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -22,6 +23,9 @@ public class TypeEntity extends BaseEntity {
     private static final long serialVersionUID = 8746267163485821882L;
 
     private String typeNumber;
+
+    @Column(insertable = false, updatable = false)
+    private String dtype;
 
     private BigDecimal amount;
 

@@ -1,10 +1,17 @@
 package org.sergei.payments.rest;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sergei.payments.AbstractTest;
+import org.sergei.payments.jpa.model.PaymentSummary;
+import org.sergei.payments.jpa.repository.PaymentRepository;
 import org.sergei.payments.rest.controller.PaymentController;
 import org.sergei.payments.rest.dto.PaymentRequestDTO;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -35,6 +42,9 @@ public class PaymentControllerTest extends AbstractTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     /**
      * Test for {@link PaymentController#getPaymentByNumber(String)}
@@ -76,5 +86,27 @@ public class PaymentControllerTest extends AbstractTest {
         String expected = readFromJSONFile("json/success_response.json");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
+    }
+
+    /**
+     * Test for {@link PaymentController#cancelPayment(String)}
+     */
+    @Disabled
+    @Test
+    void cancelPaymentTest() throws JsonProcessingException {
+        // Create payment
+        String initPaymentUrl = "http://localhost:" + port + "/payments/init";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(readFromJSONFile("json/payment_request.json"), headers);
+        ResponseEntity<String> response = restTemplate.exchange(initPaymentUrl, HttpMethod.POST, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(response.getBody());
+
+        // Perform payment cancellation
+        String cancelPaymentUrl = "http://localhost:" + port + "/payments/cancel";
+        restTemplate.exchange(cancelPaymentUrl, HttpMethod.POST, null, String.class);
+        Optional<PaymentSummary> paymentSummary = paymentRepository.findPaymentByNumber(node.get("paymentNumber").asText());
+        assertEquals(BigDecimal.ZERO, paymentSummary.get().getCancellationFee());
     }
 }
