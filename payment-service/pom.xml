@@ -12,7 +12,6 @@
 
     <artifactId>payments</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-SNAPSHOT</version>
 
     <name>Payments</name>
     <description>Compact RESTful web service for payments processing</description>

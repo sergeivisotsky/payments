@@ -12,7 +12,6 @@
 
     <artifactId>listener</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-SNAPSHOT</version>
 
     <name>Listener</name>
     <description>Payment listener</description>
