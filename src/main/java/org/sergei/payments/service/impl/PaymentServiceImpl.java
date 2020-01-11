@@ -107,9 +107,11 @@ public class PaymentServiceImpl implements PaymentService {
             LocalDateTime creationDate = paymentEntity.getCreationDate();
             long diff = Duration.between(currTime, creationDate).abs().toHours();
             if (currTime.isBefore(LocalDateTime.of(creationDate.toLocalDate().plusDays(1), LocalTime.MIDNIGHT))) {
+                // Query for cancellation coefficient
                 Optional<CancellationCoefficient> coefficient =
                         coefficientRepository.findCoefficientByDataType(paymentEntity.getType().getDtype());
                 paymentEntity.setStatus(PaymentStatus.CANCELLED);
+                // Calculate cancellation coefficient:
                 paymentEntity.setCancellationFee(BigDecimal.valueOf(diff * Double.parseDouble(String.valueOf(coefficient.get().getCoefficient()))));
                 paymentRepository.save(paymentEntity);
                 return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());

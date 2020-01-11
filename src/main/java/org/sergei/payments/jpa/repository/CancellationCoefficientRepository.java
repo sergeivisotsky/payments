@@ -14,6 +14,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CancellationCoefficientRepository extends JpaRepository<CancellationCoefficient, Long> {
 
+    /**
+     * Find payment cancellation coefficient for specific type
+     *
+     * @param dType type Class name as a type of type
+     * @return Cancellation coefficient entity
+     */
     @Query("SELECT cc FROM CancellationCoefficient cc WHERE cc.typeDType = :dType")
     Optional<CancellationCoefficient> findCoefficientByDataType(@Param("dType") String dType);
 }
