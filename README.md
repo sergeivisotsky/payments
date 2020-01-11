@@ -8,11 +8,13 @@ Compact RESTful web service for payments processing.
 * Sl4j + Logback
 * Lombok
 * H2 DB
+* Swagger
 
 ## Setup
 * Start `listener` service
 * Start `payment-service`
 * Perform payments, queries and cancellations
+* To access swagger follow this link `http://localhost:8080/swagger-ui.html`
 
 ## Detailed description
 #### Payment creation
