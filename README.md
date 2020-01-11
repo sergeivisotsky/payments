@@ -29,7 +29,7 @@ Client should be able to cancel the payment. It is possible to cancel payment on
 
 Cancellation fee is calculated as: _h * k_
 
-Where _h+ - number of full hours (2:59 = 2h) payment is in system; 
+Where _h_ - number of full hours _(2:59 = 2h)_ payment is in system; 
 
 _k_ - coefficient (0.05 for TYPE1; 0.1 for TYPE2, 0.15 for TYPE3). Result is an amount in EUR.
 
