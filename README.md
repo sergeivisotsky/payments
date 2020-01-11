@@ -7,6 +7,7 @@ Compact RESTful web service for payments processing.
 * Maven
 * Sl4j + Logback
 * Lombok
+* H2 DB
 
 ## Setup
 * Start `listener` service
