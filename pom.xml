@@ -11,16 +11,57 @@
     </parent>
 
     <groupId>org.sergei.payments</groupId>
-    <version>1.0-SNAPSHOT</version>
     <artifactId>payments-parent</artifactId>
     <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
 
-    <name>Payments Aggregate POM</name>
-    <description>Aggregate POM for payments and listener services</description>
+    <name>Payments Parent POM</name>
+    <description>Parent POM for payments and listener services</description>
 
     <modules>
         <module>listener</module>
         <module>payment-service</module>
     </modules>
+
+    <properties>
+        <guava.version>27.1-jre</guava.version>
+        <commons-io.version>2.6</commons-io.version>
+        <swagger.version>2.9.2</swagger.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Guava library dependency -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Swagger -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

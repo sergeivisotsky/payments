@@ -19,9 +19,6 @@
 
     <properties>
         <java.version>11</java.version>
-        <guava.version>27.1-jre</guava.version>
-        <commons-io.version>2.6</commons-io.version>
-        <swagger.version>2.9.2</swagger.version>
     </properties>
 
     <dependencies>
@@ -71,19 +68,16 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
 
         <!-- Swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
 
         <dependency>
@@ -93,7 +87,6 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
         </dependency>
 
     </dependencies>
