@@ -26,6 +26,7 @@ import org.sergei.payments.rest.dto.PaymentResponseHolderDTO;
 import org.sergei.payments.rest.dto.PaymentSummaryDTO;
 import org.sergei.payments.rest.dto.ResponseDTO;
 import org.sergei.payments.service.PaymentService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
+    @Value("${listener.url}")
+    private String listenerUrl;
     private final PaymentTransferLogRepository paymentTransferLogRepository;
     private final CancellationCoefficientRepository coefficientRepository;
     private final PaymentRepository paymentRepository;
@@ -97,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             // Send payment ID to the listener service
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/notify/" +
+            ResponseEntity<String> response = restTemplate.exchange(listenerUrl + "/" +
                     savedPayment.getPaymentNumber(), HttpMethod.GET, null, String.class);
             paymentTransferLogRepository.save(
                     PaymentTransferLog.builder()
