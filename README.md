@@ -11,9 +11,10 @@ Compact RESTful web service for payments processing.
 * Swagger
 
 ## Setup
-* Start `listener` service
-* Start `payment-service`
-* Perform payments, queries and cancellations
+* Start `listener` service (needs to send a payment)
+* Start `payment-service` (main functionality is implemented here)
+* Perform payments, queries and cancellations. 
+* After payment is being performed its ID sends to the listener and perform an output into the console
 * To access Swagger UI follow this link `http://localhost:8080/swagger-ui.html`
 
 ## Detailed description
