@@ -131,7 +131,7 @@ public class PaymentServiceImpl implements PaymentService {
                 Optional<CancellationCoefficient> coefficient =
                         coefficientRepository.findCoefficientByDataType(paymentEntity.getType().getDtype());
                 paymentEntity.setStatus(PaymentStatus.CANCELLED);
-                // Calculate cancellation coefficient:
+                // Calculate cancellation fee
                 paymentEntity.setCancellationFee(BigDecimal.valueOf(diff * Double.parseDouble(String.valueOf(coefficient.get().getCoefficient()))));
                 paymentRepository.save(paymentEntity);
                 return new ResponseDTO<>(ImmutableList.of(), ImmutableList.of());
